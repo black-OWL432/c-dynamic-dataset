@@ -71,13 +71,13 @@ void displayMenu();
 void handleUserChoice(int);
 
 int main() {
+    int choice = -1;
     char dataFileName[] = "dataset.txt";
 
     printf("Welcome to the Simplified Book Lending System!\n");
     loadBooksFromFile(dataFileName);
 
-    int choice;
-    do {
+    while (choice != 0) {
         displayMenu();
         printf("Enter your choice: ");
         if (scanf("%d", &choice) != 1) {
@@ -87,7 +87,7 @@ int main() {
         }
         while (getchar() != '\n');
         handleUserChoice(choice);
-    } while (choice != 0);
+    }
 
     saveBooksToFile(dataFileName);
     freeBookList(bookListHead);
@@ -202,7 +202,6 @@ void saveBooksToFile(char *filename) {
 
     struct Book *current = bookListHead;
     while (current != NULL) {
-        
         fprintf(file, "%s,%s,%s,%s\n",
                 current->title, current->author, current->borrowDate, current->returnDate);
         current = current->next;
@@ -245,16 +244,13 @@ struct Book* searchBookByTitleAndAuthor(char *title_query, char *author_query) {
 }
 
 void sortBooksByTitle() {
-    int swapped;
-    struct Book *ptr1;
+    int swapped = 0;
+    struct Book *ptr1 = bookListHead;
     struct Book *lptr = NULL;
 
     if (bookListHead == NULL) return;
 
-    do {
-        swapped = 0;
-        ptr1 = bookListHead;
-
+    while (swapped != 1) {
         while (ptr1->next != lptr) {
             if (strcmp(ptr1->title, ptr1->next->title) > 0) {
                 char tempTitle[MAX_TITLE_LEN];
@@ -283,7 +279,7 @@ void sortBooksByTitle() {
             ptr1 = ptr1->next;
         }
         lptr = ptr1;
-    } while (swapped);
+    }
     printf("Books sorted by title.\n");
 }
 
