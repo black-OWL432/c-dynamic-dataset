@@ -1,0 +1,26 @@
+name: build
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  release:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+    
+      - name: Build
+        run: |
+          chmod +x build.sh
+          ./build.sh
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dataset
+          path: out/
