@@ -294,11 +294,17 @@ void addNewBook() {
     char author[MAX_AUTHOR_LEN];
 
     printf("Enter Book Title: ");
-    fgets(title, MAX_TITLE_LEN, stdin);
+    if (fgets(title, MAX_TITLE_LEN, stdin) == NULL) {
+        printf("Error reading title.\n");
+        return;
+    }
     title[strcspn(title, "\n")] = '\0';
 
     printf("Enter Author: ");
-    fgets(author, MAX_AUTHOR_LEN, stdin);
+    if (fgets(author, MAX_AUTHOR_LEN, stdin) == NULL) {
+        printf("Error reading author.\n");
+        return;
+    }
     author[strcspn(author, "\n")] = '\0';
 
     struct Book *found = searchBookByTitleAndAuthor(title, author);
@@ -317,11 +323,17 @@ void lendBook() {
     char currentDate[MAX_DATE_LEN];
 
     printf("Enter Title of the book to lend: ");
-    fgets(title, MAX_TITLE_LEN, stdin);
+    if (fgets(title, MAX_TITLE_LEN, stdin) == NULL) {
+        printf("Error reading title.\n");
+        return;
+    }
     title[strcspn(title, "\n")] = '\0';
 
     printf("Enter Author of the book to lend: ");
-    fgets(author, MAX_AUTHOR_LEN, stdin);
+    if (fgets(author, MAX_AUTHOR_LEN, stdin) == NULL) {
+        printf("Error reading author.\n");
+        return;
+    }
     author[strcspn(author, "\n")] = '\0';
 
     struct Book *bookToLend = searchBookByTitleAndAuthor(title, author);
@@ -350,11 +362,17 @@ void returnBook() {
     char currentDate[MAX_DATE_LEN];
 
     printf("Enter Title of the book to return: ");
-    fgets(title, MAX_TITLE_LEN, stdin);
+    if (fgets(title, MAX_TITLE_LEN, stdin) == NULL) {
+        printf("Error reading title.\n");
+        return;
+    }
     title[strcspn(title, "\n")] = '\0';
 
     printf("Enter Author of the book to return: ");
-    fgets(author, MAX_AUTHOR_LEN, stdin);
+    if (fgets(author, MAX_AUTHOR_LEN, stdin) == NULL) {
+        printf("Error reading author.\n");
+        return;
+    }
     author[strcspn(author, "\n")] = '\0';
 
     struct Book *bookToReturn = searchBookByTitleAndAuthor(title, author);
@@ -431,7 +449,10 @@ void handleUserChoice(int choice) {
             break;
         case 4: 
             printf("Enter Title to search: ");
-            fgets(title_query, MAX_TITLE_LEN, stdin);
+            if (fgets(title_query, MAX_TITLE_LEN, stdin) == NULL) {
+                printf("Error reading title.\n");
+                return;
+            }
             title_query[strcspn(title_query, "\n")] = '\0';
             foundBook = searchBookByTitle(title_query);
             if (foundBook) {
@@ -445,7 +466,10 @@ void handleUserChoice(int choice) {
             break;
         case 5: 
             printf("Enter Author to search: ");
-            fgets(author_query, MAX_AUTHOR_LEN, stdin);
+            if (fgets(author_query, MAX_AUTHOR_LEN, stdin) == NULL) {
+                printf("Error reading author.\n");
+                return;
+            }
             author_query[strcspn(author_query, "\n")] = '\0';
             foundBook = searchBookByAuthor(author_query);
             if (foundBook) {

@@ -15,7 +15,7 @@ gcc -Wall -O2 -fPIC -fPIE -pie \
 [ -f "$OUTDIR/dataset_linux-x86_64" ] && echo "Build complete: dataset_linux-x86_64"
 
 # Build for Windows x86_64
-gcc -Wall -O2 -fPIC -fPIE -pie \
+x86_64-w64-mingw32-gcc -Wall -O2 \
     -o "$OUTDIR/dataset_windows-x86_64.exe" main.c
 
 [ -f "$OUTDIR/dataset_windows-x86_64.exe" ] && echo "Build complete: dataset_windows-x86_64.exe"
