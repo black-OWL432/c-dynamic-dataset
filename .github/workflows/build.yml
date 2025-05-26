@@ -5,8 +5,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    name: build
+  build-pc:
+    name: build-pc
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -20,10 +20,41 @@ jobs:
       - name: Build
         run: |
           chmod +x build.sh
-          ./build.sh
+          ./build.sh pc
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: dataset
+          name: dataset-pc
           path: out/
+
+  build-android:
+    needs: build-pc
+    name: build-android
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Install dependency
+        run: |
+          LATEST_NDK_URL=$(curl -s https://developer.android.com/ndk/downloads | grep -oP 'https://dl.google.com/android/repository/android-ndk-r[0-9]+[a-z]?-linux\.zip' | head -n 1)
+          [ -z "$LATEST_NDK_URL" ] && LATEST_NDK_URL="https://dl.google.com/android/repository/android-ndk-r27c-linux.zip"
+          wget "$LATEST_NDK_URL" -O android-ndk.zip
+          TEMP_DIR=$(mktemp -d)
+          unzip android-ndk.zip -d "$TEMP_DIR"
+          EXTRACTED_DIR=$(find "$TEMP_DIR" -maxdepth 1 -name "android-ndk-*" -type d | head -n 1)
+          mv -f "$EXTRACTED_DIR" "$(pwd)/android-ndk"
+
+      - name: Build
+        run: |
+          chmod +x build.sh
+          ./build.sh android "$(pwd)/android-ndk"
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dataset-android
+          path: out/dataset_android-arm64-v8a
