@@ -42,7 +42,7 @@ int main() {
     int choice = -1;
     char dataFileName[] = "dataset.txt";
 
-    printf("Welcome to the Simplified Book Lending System!\n");
+    printf("Welcome to the Book Lending System!\n");
     loadBooksFromFile(dataFileName);
 
     while (choice != 0) {
