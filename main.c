@@ -34,41 +34,9 @@
  * 
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-
-#define MAX_TITLE_LEN 100
-#define MAX_AUTHOR_LEN 100
-#define MAX_DATE_LEN 11 // YYYY-MM-DD\0
-
-struct Book {
-    char title[MAX_TITLE_LEN];
-    char author[MAX_AUTHOR_LEN];
-    char borrowDate[MAX_DATE_LEN];
-    char returnDate[MAX_DATE_LEN];
-    struct Book *next;
-};
+#include "book.h"
 
 struct Book *bookListHead = NULL;
-struct Book* createBookNode(char *, char *, char *, char *);
-void addBook(char *, char *, char *, char *);
-void freeBookList(struct Book *);
-void loadBooksFromFile(char *);
-void saveBooksToFile(char *);
-struct Book* searchBookByTitle(char *);
-struct Book* searchBookByAuthor(char *);
-struct Book* searchBookByTitleAndAuthor(char *, char *);
-void sortBooksByTitle();
-void getCurrentDate(char *, int);
-void addNewBook();
-void lendBook();
-void returnBook();
-void displayBook(struct Book *);
-void displayAllBooks();
-void displayMenu();
-void handleUserChoice(int);
 
 int main() {
     int choice = -1;
