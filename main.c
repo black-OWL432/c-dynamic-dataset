@@ -5,7 +5,7 @@
  * 
  * --------------------------------------
  * 
- * Dynamic Dataset: Book Lending System
+ * Dynamic Dataset: Table reservation system
  * 
  * Students 1
  * Name: Lee Chong Chun
@@ -34,431 +34,268 @@
  * 
  */
 
-#include "book.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-struct Book *bookListHead = NULL;
+#define NAME_LEN 20
+#define PHONE_LEN 20
+#define DATE_LEN 15
+#define TIME_LEN 10
 
-int main() {
-    int choice = -1;
-    char dataFileName[] = "dataset.txt";
+struct Table {
+    int table;
+    char name[NAME_LEN];
+    char phone[PHONE_LEN];
+    char date[DATE_LEN];
+    char time[TIME_LEN];
+    struct Table *next;
+};
 
-    printf("Welcome to the Book Lending System!\n");
-    loadBooksFromFile(dataFileName);
+struct Table* initTableNode(int, char *, char *, char *, char *);
+void push(int, char *, char *, char *, char *, struct Table *);
+char pop(struct Table *curr);
+char empty(struct Table *head, struct Table *curr);
+void printTable(struct Table *head);
+void printMenu();
+int getTable();
+void getName(char *);
+void getPhone(char *);
+void getDate(char *);
+void getTime(char *);
 
-    while (choice != 0) {
-        displayMenu();
-        printf("Enter your choice: ");
-        if (scanf("%d", &choice) != 1) {
-            printf("Invalid input. Please enter a number.\n");
-            while (getchar() != '\n');
-            continue;
+int main(){
+    char value, what;
+    struct Table *head = NULL;
+    struct Table *curr = NULL;
+    head = initTableNode(0, "\0", "\0", "\0", "\0");
+    head->next = NULL;
+
+    do {
+        printMenu();
+        char buffer[256];
+
+        if (fgets(buffer, sizeof(buffer), stdin) != NULL) {
+            what = buffer[0];
+            switch(what-'0') {
+                case 1:
+                    {
+                        int table;
+                        char name[NAME_LEN], phone[PHONE_LEN], date[DATE_LEN], time[TIME_LEN];
+
+                        table = getTable();
+                        getName(name);
+                        getPhone(phone);
+                        getDate(date);
+                        getTime(time);
+
+                        push(table, name, phone, date, time, head);
+                        printf("Reservation added successfully\n");
+                        break;
+                    }
+                case 2:
+                    if (empty(head, curr)) {
+                        printf("No reservations exist\n");
+                    } else {
+                        value = pop(head);
+                        if (value) {
+                            printf("Reservation successfully cancelled\n");
+                        }
+                    }
+                    break;
+                case 3:
+                    printTable(head);
+                    break;
+                default: break;
+            }
         }
-        while (getchar() != '\n');
-        handleUserChoice(choice);
-    }
+    } while(what-'0');
+    printf("Exiting...\n");
 
-    saveBooksToFile(dataFileName);
-    freeBookList(bookListHead);
-
-    printf("Exiting Book Lending System. Goodbye!\n");
     return 0;
 }
 
-struct Book* createBookNode(char *title, char *author, char *borrow_date, char *return_date) {
-    struct Book *newNode = (struct Book *)malloc(sizeof(struct Book));
+struct Table* initTableNode(int table, char *name, char *phone, char *date, char *time) {
+    struct Table *temp = (struct Table *)malloc(sizeof(struct Table));
+    temp->table = table;
+    strcpy(temp->name, name);
+    strcpy(temp->phone, phone);
+    strcpy(temp->date, date);
+    strcpy(temp->time, time);
 
-    strncpy(newNode->title, title, MAX_TITLE_LEN - 1);
-    newNode->title[MAX_TITLE_LEN - 1] = '\0';
-    strncpy(newNode->author, author, MAX_AUTHOR_LEN - 1);
-    newNode->author[MAX_AUTHOR_LEN - 1] = '\0';
-    strncpy(newNode->borrowDate, borrow_date, MAX_DATE_LEN - 1);
-    newNode->borrowDate[MAX_DATE_LEN - 1] = '\0';
-    strncpy(newNode->returnDate, return_date, MAX_DATE_LEN - 1);
-    newNode->returnDate[MAX_DATE_LEN - 1] = '\0';
-    newNode->next = NULL;
-
-    return newNode;
+    temp->next = NULL;
+    return temp;
 }
 
-void addBook(char *title, char *author, char *borrow_date, char *return_date) {
-    struct Book *existingBook = NULL;
-    struct Book *current = bookListHead;
-    while(current != NULL) {
-        if (strcmp(current->title, title) == 0 && strcmp(current->author, author) == 0 && strcmp(current->borrowDate, "") == 0) {
-            existingBook = current;
-            break;
+void push(int table, char *name, char *phone, char *date, char *time, struct Table *head) {
+    struct Table *temp;
+    temp = initTableNode(table, name, phone, date, time);
+    temp->next = head->next;
+    head->next = temp;
+}
+
+char pop(struct Table *curr) {
+    struct Table *temp;
+    int targetTable;
+    char targetDate[DATE_LEN], targetTime[TIME_LEN];
+    
+    targetTable = getTable();
+    getDate(targetDate);
+    getTime(targetTime);
+
+    struct Table *prev = curr;
+    temp = curr->next;
+
+    while (temp != NULL) {
+        if (temp->table == targetTable && 
+            strcmp(temp->date, targetDate) == 0 &&
+            strcmp(temp->time, targetTime) == 0) {
+
+            prev->next = temp->next;
+            printf("Reservation cancelled for %s\n", temp->name);
+            free(temp);
+            return 1;
         }
-        current = current->next;
+        prev = temp;
+        temp = temp->next;
     }
 
-    if (existingBook != NULL) {
-        printf("Book '%s' by '%s' already exists and is available. No new entry added.\n", title, author);
+    printf("\033[0;31mNo matching reservation found!\033[0m\n");
+    return 0;
+}
+
+char empty(struct Table *head, struct Table *curr){
+    return head->next == curr;
+}
+
+void printTable(struct Table *head) {
+    struct Table *temp = head->next;
+    if (temp == NULL) {
+        printf("\033[0;31mNo reservations exist.\033[0m\n");
         return;
     }
 
-    struct Book *newBook = createBookNode(title, author, borrow_date, return_date);
-    if (newBook) {
-        newBook->next = bookListHead;
-        bookListHead = newBook;
-        printf("Book '%s' by '%s' added successfully.\n", title, author);
+    printf("Current Reservations:\n");
+    printf("Table\tName                Phone               Date           Time\n");
+    printf("-------------------------------------------------------------------\n");
+    while (temp != NULL) {
+        printf("%d\t%-20s%-20s%-15s%-5s\n", 
+               temp->table, 
+               temp->name, 
+               temp->phone, 
+               temp->date, 
+               temp->time);
+        temp = temp->next;
     }
 }
 
-void freeBookList(struct Book *head) {
-    struct Book *current = head;
-    struct Book *next;
-    while (current != NULL) {
-        next = current->next;
-        free(current);
-        current = next;
-    }
+void printMenu() {
+    printf("\nWelcome to table revervatrion service, please enter your option:\n");
+    printf("  \033[34m[1]\033[0m Make table reservation\n");
+    printf("  \033[34m[2]\033[0m Cancel table reservation\n");
+    printf("  \033[34m[3]\033[0m View all reservations\n");
+    printf("  \033[34m[0]\033[0m Exit\n");
+    printf("Enter your choice: ");
 }
 
-void loadBooksFromFile(char *filename) {
-    FILE *file = fopen(filename, "r");
-    if (file == NULL) {
-        return;
-    }
-
-    char line[2 * MAX_TITLE_LEN + 2 * MAX_DATE_LEN + 10];
-    char *token;
-
-    freeBookList(bookListHead);
-    bookListHead = NULL;
-
-    printf("Loading book data...\n");
-    while (fgets(line, sizeof(line), file) != NULL) {
-        line[strcspn(line, "\n")] = '\0';
-
-        char title[MAX_TITLE_LEN];
-        char author[MAX_AUTHOR_LEN];
-        char borrowDate[MAX_DATE_LEN];
-        char returnDate[MAX_DATE_LEN];
-
-        token = strtok(line, ",");
-        if (token) {
-            strncpy(title, token, MAX_TITLE_LEN - 1);
-            title[MAX_TITLE_LEN - 1] = '\0';
+int getTable() {
+    int table;
+    char buffer[256];
+    
+    do {
+        printf("Enter table number (1-50): ");
+        if (fgets(buffer, sizeof(buffer), stdin) == NULL) {
+            printf("\033[0;31mInvalid input! Please enter a number between 1 and 50:\033[0m ");
+            continue;
         }
-        token = strtok(NULL, ",");
-        if (token) {
-            strncpy(author, token, MAX_AUTHOR_LEN - 1);
-            author[MAX_AUTHOR_LEN - 1] = '\0';
-        }
-        token = strtok(NULL, ",");
-        if (token) {
-            strncpy(borrowDate, token, MAX_DATE_LEN - 1);
-            borrowDate[MAX_DATE_LEN - 1] = '\0';
-        }
-        token = strtok(NULL, "\n");
-        if (token) {
-            strncpy(returnDate, token, MAX_DATE_LEN - 1);
-            returnDate[MAX_DATE_LEN - 1] = '\0';
+        
+        if (sscanf(buffer, "%d", &table) != 1) {
+            printf("\033[0;31mInvalid input! Please enter a number between 1 and 50:\033[0m ");
+            continue;
         }
 
-        addBook(title, author, borrowDate, returnDate);
-    }
-    printf("Book data loaded.\n");
-    fclose(file);
-}
-
-void saveBooksToFile(char *filename) {
-    FILE *file = fopen(filename, "w");
-    if (file == NULL) {
-        return;
-    }
-
-    struct Book *current = bookListHead;
-    while (current != NULL) {
-        fprintf(file, "%s,%s,%s,%s\n",
-                current->title, current->author, current->borrowDate, current->returnDate);
-        current = current->next;
-    }
-    printf("Book data saved to %s.\n", filename);
-    fclose(file);
-}
-
-struct Book* searchBookByTitle(char *title_query) {
-    struct Book *current = bookListHead;
-    while (current != NULL) {
-        if (strcasecmp(current->title, title_query) == 0) { 
-            return current;
+        if (table <= 0 || table > 50) {
+            printf("\033[0;31mInvalid input! Please enter a number between 1 and 50:\033[0m ");
+            continue;
         }
-        current = current->next;
-    }
-    return NULL;
+        break;
+    } while (1);
+
+    return table;
 }
 
-struct Book* searchBookByAuthor(char *author_query) {
-    struct Book *current = bookListHead;
-    while (current != NULL) {
-        if (strcasecmp(current->author, author_query) == 0) { 
-            return current;
+void getName(char *name) {
+    printf("Enter your name: ");
+    do {
+        if (fgets(name, NAME_LEN, stdin) == NULL || name[0] == '\n') {
+            printf("\033[0;31mInvalid input! Please enter a valid name:\033[0m ");
+            continue;
         }
-        current = current->next;
-    }
-    return NULL;
+        name[strcspn(name, "\n")] = 0;
+    } while (strlen(name) == 0);
 }
 
-struct Book* searchBookByTitleAndAuthor(char *title_query, char *author_query) {
-    struct Book *current = bookListHead;
-    while (current != NULL) {
-        if (strcasecmp(current->title, title_query) == 0 && strcasecmp(current->author, author_query) == 0) {
-            return current;
+void getPhone(char *phone) {
+    do {
+        printf("Enter phone number: ");
+        if (fgets(phone, PHONE_LEN, stdin) == NULL || phone[0] == '\n') {
+            printf("\033[0;31mInvalid input! Please enter a valid phone number: \033[0m");
+            continue;
         }
-        current = current->next;
-    }
-    return NULL;
+        phone[strcspn(phone, "\n")] = 0;
+    } while (strlen(phone) == 0);
 }
 
-void sortBooksByTitle() {
-    int swapped = 0;
-    struct Book *ptr1 = bookListHead;
-    struct Book *lptr = NULL;
+void getDate(char *date) {
+    int day, month, year;
+    char buffer[256];
 
-    if (bookListHead == NULL) return;
-
-    while (swapped != 1) {
-        while (ptr1->next != lptr) {
-            if (strcmp(ptr1->title, ptr1->next->title) > 0) {
-                char tempTitle[MAX_TITLE_LEN];
-                char tempAuthor[MAX_AUTHOR_LEN];
-                char tempBorrowDate[MAX_DATE_LEN];
-                char tempReturnDate[MAX_DATE_LEN];
-
-                strcpy(tempTitle, ptr1->title);
-                strcpy(ptr1->title, ptr1->next->title);
-                strcpy(ptr1->next->title, tempTitle);
-
-                strcpy(tempAuthor, ptr1->author);
-                strcpy(ptr1->author, ptr1->next->author);
-                strcpy(ptr1->next->author, tempAuthor);
-
-                strcpy(tempBorrowDate, ptr1->borrowDate);
-                strcpy(ptr1->borrowDate, ptr1->next->borrowDate);
-                strcpy(ptr1->next->borrowDate, tempBorrowDate);
-
-                strcpy(tempReturnDate, ptr1->returnDate);
-                strcpy(ptr1->returnDate, ptr1->next->returnDate);
-                strcpy(ptr1->next->returnDate, tempReturnDate);
-
-                swapped = 1;
-            }
-            ptr1 = ptr1->next;
+    printf("Enter reservation date (DD-MM-YYYY): ");
+    do {
+        if (fgets(buffer, sizeof(buffer), stdin) == NULL) {
+            printf("\033[0;31mInvalid date format! Use DD-MM-YYYY (e.g., 28-05-2025):\033[0m ");
+            continue;
         }
-        lptr = ptr1;
-    }
-    printf("Books sorted by title.\n");
+
+        buffer[strcspn(buffer, "\n")] = 0;
+
+        if (strlen(buffer) != 10 || buffer[2] != '-' || buffer[5] != '-') {
+            printf("\033[0;31mInvalid date format! Use DD-MM-YYYY (e.g., 28-05-2025):\033[0m ");
+            continue;
+        }
+
+        if (sscanf(buffer, "%d-%d-%d", &day, &month, &year) != 3 || 
+            month < 1 || month > 12 || day < 1 || day > 31) {
+            printf("\033[0;31mInvalid date format! Use DD-MM-YYYY (e.g., 28-05-2025):\033[0m ");
+            continue;
+        }
+
+        strcpy(date, buffer);
+        break;
+    } while (1);
 }
 
-void getCurrentDate(char *date_str, int max_len) {
-    time_t t = time(NULL);
-    struct tm *tm_info = localtime(&t);
-    strftime(date_str, max_len, "%Y-%m-%d", tm_info);
-}
+void getTime(char *time) {
+    int hour;
+    char meridiem[3];
+    char buffer[256];
 
-void addNewBook() {
-    char title[MAX_TITLE_LEN];
-    char author[MAX_AUTHOR_LEN];
+    printf("Enter reservation time (12HR format, e.g., 2pm): ");
+    do {
+        if (fgets(buffer, sizeof(buffer), stdin) == NULL) {
+            printf("\033[0;31mInvalid input! Please enter a valid time (e.g., 2pm):\033[0m ");
+            continue;
+        }
 
-    printf("Enter Book Title: ");
-    if (fgets(title, MAX_TITLE_LEN, stdin) == NULL) {
-        printf("Error reading title.\n");
-        return;
-    }
-    title[strcspn(title, "\n")] = '\0';
+        buffer[strcspn(buffer, "\n")] = 0;
 
-    printf("Enter Author: ");
-    if (fgets(author, MAX_AUTHOR_LEN, stdin) == NULL) {
-        printf("Error reading author.\n");
-        return;
-    }
-    author[strcspn(author, "\n")] = '\0';
+        if (sscanf(buffer, "%d%2s", &hour, meridiem) != 2 || hour < 1 || hour > 12 ||
+            (strcmp(meridiem, "am") != 0 && strcmp(meridiem, "pm") != 0)) {
+            printf("\033[0;31mInvalid input! Please enter a valid time (e.g., 2pm):\033[0m ");
+            continue;
+        }
 
-    struct Book *found = searchBookByTitleAndAuthor(title, author);
-    if (found != NULL && strcmp(found->borrowDate, "") == 0) {
-        printf("Error: Book '%s' by '%s' already exists in the available inventory.\n", title, author);
-        return;
-    }
-
-    addBook(title, author, "", "");
-    printf("New book '%s' by '%s' added to available inventory.\n", title, author);
-}
-
-void lendBook() {
-    char title[MAX_TITLE_LEN];
-    char author[MAX_AUTHOR_LEN];
-    char currentDate[MAX_DATE_LEN];
-
-    printf("Enter Title of the book to lend: ");
-    if (fgets(title, MAX_TITLE_LEN, stdin) == NULL) {
-        printf("Error reading title.\n");
-        return;
-    }
-    title[strcspn(title, "\n")] = '\0';
-
-    printf("Enter Author of the book to lend: ");
-    if (fgets(author, MAX_AUTHOR_LEN, stdin) == NULL) {
-        printf("Error reading author.\n");
-        return;
-    }
-    author[strcspn(author, "\n")] = '\0';
-
-    struct Book *bookToLend = searchBookByTitleAndAuthor(title, author);
-
-    if (bookToLend == NULL) {
-        printf("Book '%s' by '%s' not found in the system.\n", title, author);
-        return;
-    }
-
-    if (strcmp(bookToLend->borrowDate, "") != 0) { 
-        printf("Book '%s' by '%s' is already borrowed (borrowed on %s).\n",
-               bookToLend->title, bookToLend->author, bookToLend->borrowDate);
-        return;
-    }
-
-    getCurrentDate(currentDate, MAX_DATE_LEN);
-    strcpy(bookToLend->borrowDate, currentDate);
-    strcpy(bookToLend->returnDate, "N/A");
-    printf("Book '%s' by '%s' successfully lent on %s.\n",
-           bookToLend->title, bookToLend->author, bookToLend->borrowDate);
-}
-
-void returnBook() {
-    char title[MAX_TITLE_LEN];
-    char author[MAX_AUTHOR_LEN];
-    char currentDate[MAX_DATE_LEN];
-
-    printf("Enter Title of the book to return: ");
-    if (fgets(title, MAX_TITLE_LEN, stdin) == NULL) {
-        printf("Error reading title.\n");
-        return;
-    }
-    title[strcspn(title, "\n")] = '\0';
-
-    printf("Enter Author of the book to return: ");
-    if (fgets(author, MAX_AUTHOR_LEN, stdin) == NULL) {
-        printf("Error reading author.\n");
-        return;
-    }
-    author[strcspn(author, "\n")] = '\0';
-
-    struct Book *bookToReturn = searchBookByTitleAndAuthor(title, author);
-
-    if (bookToReturn == NULL) {
-        printf("Book '%s' by '%s' not found in the system.\n", title, author);
-        return;
-    }
-
-    if (strcmp(bookToReturn->borrowDate, "") == 0) { 
-        printf("Book '%s' by '%s' is already available.\n", bookToReturn->title, bookToReturn->author);
-        return;
-    }
-
-    getCurrentDate(currentDate, MAX_DATE_LEN);
-    strcpy(bookToReturn->returnDate, currentDate);
-
-    strcpy(bookToReturn->borrowDate, "");
-    printf("Book '%s' by '%s' successfully returned on %s.\n",
-           bookToReturn->title, bookToReturn->author, bookToReturn->returnDate);
-}
-
-void displayBook(struct Book *book) {
-    if (book == NULL) return;
-    printf("%-30s %-20s %-12s %-12s %s\n",
-           book->title, book->author,
-           strcmp(book->borrowDate, "") == 0 ? "Available" : book->borrowDate, 
-           strcmp(book->returnDate, "N/A") == 0 ? "Borrowed" : book->returnDate, 
-           (strcmp(book->borrowDate, "") != 0 && strcmp(book->returnDate, "N/A") == 0) ? "(CURRENTLY BORROWED)" : ""
-    );
-}
-
-void displayAllBooks() {
-    if (bookListHead == NULL) {
-        printf("No books in the system.\n");
-        return;
-    }
-    printf("\n--- All Books ---\n");
-    printf("%-30s %-20s %-12s %-12s %s\n", "Title", "Author", "Borrowed", "Returned", "Status");
-    printf("--------------------------------------------------------------------------------------\n");
-    struct Book *current = bookListHead;
-    while (current != NULL) {
-        displayBook(current);
-        current = current->next;
-    }
-}
-
-void displayMenu() {
-    printf("\n--- Book Lending System Menu ---\n");
-    printf("1. Add New Book (to inventory)\n");
-    printf("2. Lend a Book\n");
-    printf("3. Return a Book\n");
-    printf("4. Search Book by Title\n");
-    printf("5. Search Book by Author\n");
-    printf("6. Display All Books\n");
-    printf("7. Sort Books by Title\n");
-    printf("0. Exit\n");
-}
-
-void handleUserChoice(int choice) {
-    char title_query[MAX_TITLE_LEN];
-    char author_query[MAX_AUTHOR_LEN];
-    struct Book *foundBook;
-
-    switch (choice) {
-        case 1: 
-            addNewBook();
-            break;
-        case 2: 
-            lendBook();
-            break;
-        case 3: 
-            returnBook();
-            break;
-        case 4: 
-            printf("Enter Title to search: ");
-            if (fgets(title_query, MAX_TITLE_LEN, stdin) == NULL) {
-                printf("Error reading title.\n");
-                return;
-            }
-            title_query[strcspn(title_query, "\n")] = '\0';
-            foundBook = searchBookByTitle(title_query);
-            if (foundBook) {
-                printf("\nBook Found:\n");
-                printf("%-30s %-20s %-12s %-12s %s\n", "Title", "Author", "Borrowed", "Returned", "Status");
-                printf("--------------------------------------------------------------------------------------\n");
-                displayBook(foundBook);
-            } else {
-                printf("Book with title '%s' not found.\n", title_query);
-            }
-            break;
-        case 5: 
-            printf("Enter Author to search: ");
-            if (fgets(author_query, MAX_AUTHOR_LEN, stdin) == NULL) {
-                printf("Error reading author.\n");
-                return;
-            }
-            author_query[strcspn(author_query, "\n")] = '\0';
-            foundBook = searchBookByAuthor(author_query);
-            if (foundBook) {
-                printf("\nBook Found:\n");
-                printf("%-30s %-20s %-12s %-12s %s\n", "Title", "Author", "Borrowed", "Returned", "Status");
-                printf("--------------------------------------------------------------------------------------\n");
-                displayBook(foundBook);
-            } else {
-                printf("Book by author '%s' not found.\n", author_query);
-            }
-            break;
-        case 6: 
-            displayAllBooks();
-            break;
-        case 7: 
-            sortBooksByTitle();
-            displayAllBooks();
-            break;
-        case 0: 
-            break;
-        default:
-            printf("Invalid choice. Please try again.\n");
-    }
+        strcpy(time, buffer);
+        break;
+    } while (1);
 }
