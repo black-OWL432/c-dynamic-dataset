@@ -63,6 +63,8 @@ void getName(char *);
 void getPhone(char *);
 void getDate(char *);
 void getTime(char *);
+void loadFromFile(struct Table *);
+void saveToFile(struct Table *);
 
 int main(){
     char what;
@@ -71,6 +73,8 @@ int main(){
     head = initTableNode(0, "\0", "\0", "\0", "\0");
     head->next = NULL;
 
+    loadFromFile(head);
+
     do {
         printMenu();
         char buffer[256];
@@ -78,7 +82,7 @@ int main(){
         if (fgets(buffer, sizeof(buffer), stdin) != NULL) {
             what = buffer[0];
             switch(what-'0') {
-                case 1:
+                case 1: // Add reservation
                     int table;
                     char name[NAME_LEN], phone[PHONE_LEN], date[DATE_LEN], time[TIME_LEN];
 
@@ -93,7 +97,7 @@ int main(){
                     push(table, name, phone, date, time, head);
                     printf("Reservation added successfully\n");
                     break;
-                case 2:
+                case 2: // Cancel reservation
                     if (empty(head, curr)) {
                         printf("No reservations exist\n");
                     } else {
@@ -101,7 +105,7 @@ int main(){
                         pop(head);
                     }
                     break;
-                case 3:
+                case 3: // View reservations
                     printTable(head);
                     printf("Press Enter to continue...");
                     getchar();
@@ -110,11 +114,21 @@ int main(){
             }
         }
     } while(what-'0');
-    printf("Exiting...\n");
+
+    // save to stack to file on exit
+    saveToFile(head);
+    printf("Saving revervation information into dataset.txt...\n");
 
     return 0;
 }
 
+/**
+ * Stack operations
+ * struct Table* initTableNode(); - Initializes a new table node with the given parameters.
+ * push(); - Pushes a new reservation onto the stack.
+ * pop(); - Pops a reservation from the stack based on user input.
+ * empty(); - Checks if the stack is empty.
+ */
 struct Table* initTableNode(int table, char *name, char *phone, char *date, char *time) {
     struct Table *temp = (struct Table *)malloc(sizeof(struct Table));
     temp->table = table;
@@ -169,6 +183,11 @@ char empty(struct Table *head, struct Table *curr){
     return head->next == curr;
 }
 
+/**
+ * Print operations
+ * printTable(); - Prints the current reservations in a formatted table.
+ * printMenu(); - Displays the main menu options.
+ */
 void printTable(struct Table *head) {
     struct Table *temp = head->next;
     if (temp == NULL) {
@@ -204,6 +223,14 @@ void printMenu() {
     printf("Enter your choice: ");
 }
 
+/**
+ * Prompt operations
+ * getTable(); - Prompts user for table number input.
+ * getName(); - Prompts user for name input.
+ * getPhone(); - Prompts user for phone number input.
+ * getDate(); - Prompts user for reservation date input.
+ * getTime(); - Prompts user for reservation time input.
+ */
 void getTable(int *table) {
     char buffer[256];
     
@@ -301,4 +328,54 @@ void getTime(char *time) {
         strcpy(time, buffer);
         break;
     } while (1);
+}
+
+/**
+ * File operations
+ * loadFromFile(); - Loads reservations from a file into the stack.
+ * saveToFile(); - Saves current reservations to a file.
+ */
+void loadFromFile(struct Table *head) {
+    FILE *file = fopen("dataset.txt", "r");
+    if (file == NULL) {
+        return;
+    }
+
+    char line[256];
+    while (fgets(line, sizeof(line), file)) {
+        int table;
+        char name[NAME_LEN], phone[PHONE_LEN], date[DATE_LEN], time[TIME_LEN];
+
+        if (sscanf(line, "%d,%19[^,],%19[^,],%14[^,],%9s", 
+                   &table, name, phone, date, time) != 5) {
+            printf("\033[0;31mInvalid line format in file: %s\033[0m\n", line);
+            continue;
+        }
+
+        push(table, name, phone, date, time, head);
+    }
+
+    fclose(file);
+}
+
+void saveToFile(struct Table *head) {
+    FILE *file = fopen("dataset.txt", "w");
+    if (file == NULL) {
+        printf("\033[0;31mError opening file for writing!\033[0m\n");
+        getchar();
+        return;
+    }
+
+    struct Table *temp = head->next;
+    while (temp != NULL) {
+        fprintf(file, "%d,%s,%s,%s,%s\n", 
+                temp->table, 
+                temp->name, 
+                temp->phone, 
+                temp->date, 
+                temp->time);
+        temp = temp->next;
+    }
+
+    fclose(file);
 }
