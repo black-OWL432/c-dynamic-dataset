@@ -82,7 +82,7 @@ int main(){
         if (fgets(buffer, sizeof(buffer), stdin) != NULL) {
             what = buffer[0];
             switch(what-'0') {
-                case 1: // Add reservation
+                case 1: { // Add reservation
                     int table;
                     char name[NAME_LEN], phone[PHONE_LEN], date[DATE_LEN], time[TIME_LEN];
 
@@ -97,7 +97,7 @@ int main(){
                     push(table, name, phone, date, time, head);
                     printf("Reservation added successfully\n");
                     break;
-                case 2: // Cancel reservation
+                } case 2: { // Cancel reservation
                     if (empty(head, curr)) {
                         printf("No reservations exist\n");
                     } else {
@@ -105,12 +105,12 @@ int main(){
                         pop(head);
                     }
                     break;
-                case 3: // View reservations
+                } case 3: { // View reservations
                     printTable(head);
                     printf("Press Enter to continue...");
-                    getchar();
+                    (void)getchar();
                     break;
-                default: break;
+                } default: break;
             }
         }
     } while(what-'0');
@@ -168,7 +168,7 @@ char pop(struct Table *curr) {
             prev->next = temp->next;
             printf("Reservation cancelled for \033[0;34m%s\033[0m, press Enter to continue...\n", temp->name);
             free(temp);
-            getchar();
+            (void)getchar();
             return 1;
         }
         prev = temp;
@@ -193,7 +193,7 @@ void printTable(struct Table *head) {
     if (temp == NULL) {
         printf("\033[0;31mNo reservations exist.\033[0m\n");
         printf("Press Enter to continue...");
-        getchar();
+        (void)getchar();
         return;
     }
 
@@ -362,7 +362,7 @@ void saveToFile(struct Table *head) {
     FILE *file = fopen("dataset.txt", "w");
     if (file == NULL) {
         printf("\033[0;31mError opening file for writing!\033[0m\n");
-        getchar();
+        (void)getchar();
         return;
     }
 
