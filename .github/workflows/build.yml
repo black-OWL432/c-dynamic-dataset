@@ -29,7 +29,6 @@ jobs:
           path: out/
 
   build-android:
-    needs: build-pc
     name: build-android
     runs-on: ubuntu-latest
     steps:
