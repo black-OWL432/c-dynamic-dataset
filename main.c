@@ -54,18 +54,18 @@ struct Table {
 
 struct Table* initTableNode(int, char *, char *, char *, char *);
 void push(int, char *, char *, char *, char *, struct Table *);
-char pop(struct Table *curr);
-char empty(struct Table *head, struct Table *curr);
-void printTable(struct Table *head);
+char pop(struct Table *);
+char empty(struct Table *, struct Table *);
+void printTable(struct Table *);
 void printMenu();
-int getTable();
+void getTable(int *);
 void getName(char *);
 void getPhone(char *);
 void getDate(char *);
 void getTime(char *);
 
 int main(){
-    char value, what;
+    char what;
     struct Table *head = NULL;
     struct Table *curr = NULL;
     head = initTableNode(0, "\0", "\0", "\0", "\0");
@@ -79,32 +79,32 @@ int main(){
             what = buffer[0];
             switch(what-'0') {
                 case 1:
-                    {
-                        int table;
-                        char name[NAME_LEN], phone[PHONE_LEN], date[DATE_LEN], time[TIME_LEN];
+                    int table;
+                    char name[NAME_LEN], phone[PHONE_LEN], date[DATE_LEN], time[TIME_LEN];
 
-                        table = getTable();
-                        getName(name);
-                        getPhone(phone);
-                        getDate(date);
-                        getTime(time);
+                    printf("Please fill in reservation details:\n");
 
-                        push(table, name, phone, date, time, head);
-                        printf("Reservation added successfully\n");
-                        break;
-                    }
+                    getTable(&table);
+                    getName(name);
+                    getPhone(phone);
+                    getDate(date);
+                    getTime(time);
+
+                    push(table, name, phone, date, time, head);
+                    printf("Reservation added successfully\n");
+                    break;
                 case 2:
                     if (empty(head, curr)) {
                         printf("No reservations exist\n");
                     } else {
-                        value = pop(head);
-                        if (value) {
-                            printf("Reservation successfully cancelled\n");
-                        }
+                        printTable(head);
+                        pop(head);
                     }
                     break;
                 case 3:
                     printTable(head);
+                    printf("Press Enter to continue...");
+                    getchar();
                     break;
                 default: break;
             }
@@ -139,7 +139,7 @@ char pop(struct Table *curr) {
     int targetTable;
     char targetDate[DATE_LEN], targetTime[TIME_LEN];
     
-    targetTable = getTable();
+    getTable(&targetTable);
     getDate(targetDate);
     getTime(targetTime);
 
@@ -152,8 +152,9 @@ char pop(struct Table *curr) {
             strcmp(temp->time, targetTime) == 0) {
 
             prev->next = temp->next;
-            printf("Reservation cancelled for %s\n", temp->name);
+            printf("Reservation cancelled for \033[0;34m%s\033[0m, press Enter to continue...\n", temp->name);
             free(temp);
+            getchar();
             return 1;
         }
         prev = temp;
@@ -172,10 +173,13 @@ void printTable(struct Table *head) {
     struct Table *temp = head->next;
     if (temp == NULL) {
         printf("\033[0;31mNo reservations exist.\033[0m\n");
+        printf("Press Enter to continue...");
+        getchar();
         return;
     }
 
-    printf("Current Reservations:\n");
+    printf("\e[1;1H\e[2J");
+    printf("\033[0;34mCurrent Reservations:\033[0m\n");
     printf("Table\tName                Phone               Date           Time\n");
     printf("-------------------------------------------------------------------\n");
     while (temp != NULL) {
@@ -187,10 +191,12 @@ void printTable(struct Table *head) {
                temp->time);
         temp = temp->next;
     }
+    printf("-------------------------------------------------------------------\n");
 }
 
 void printMenu() {
-    printf("\nWelcome to table revervatrion service, please enter your option:\n");
+    printf("\e[1;1H\e[2J");
+    printf("Welcome to table revervatrion service, please enter your option:\n");
     printf("  \033[34m[1]\033[0m Make table reservation\n");
     printf("  \033[34m[2]\033[0m Cancel table reservation\n");
     printf("  \033[34m[3]\033[0m View all reservations\n");
@@ -198,8 +204,7 @@ void printMenu() {
     printf("Enter your choice: ");
 }
 
-int getTable() {
-    int table;
+void getTable(int *table) {
     char buffer[256];
     
     do {
@@ -209,23 +214,21 @@ int getTable() {
             continue;
         }
         
-        if (sscanf(buffer, "%d", &table) != 1) {
+        if (sscanf(buffer, "%d", table) != 1) {
             printf("\033[0;31mInvalid input! Please enter a number between 1 and 50:\033[0m ");
             continue;
         }
 
-        if (table <= 0 || table > 50) {
+        if (*table <= 0 || *table > 50) {
             printf("\033[0;31mInvalid input! Please enter a number between 1 and 50:\033[0m ");
             continue;
         }
         break;
     } while (1);
-
-    return table;
 }
 
 void getName(char *name) {
-    printf("Enter your name: ");
+    printf("Enter customer name: ");
     do {
         if (fgets(name, NAME_LEN, stdin) == NULL || name[0] == '\n') {
             printf("\033[0;31mInvalid input! Please enter a valid name:\033[0m ");
