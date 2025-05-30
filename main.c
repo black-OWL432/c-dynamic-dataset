@@ -66,7 +66,7 @@ void getTime(char *);
 void loadFromFile(struct Table *);
 void saveToFile(struct Table *);
 
-int errno = 0;
+int subproc_errno = 0;
 
 int main(){
     char what;
@@ -98,7 +98,7 @@ int main(){
 
                     push(table, name, phone, date, time, head);
                     printf("Reservation added successfully\n");
-                    errno = 0;
+                    subproc_errno = 0;
                     break;
                 } case 2: { // Cancel reservation
                     if (empty(head, curr)) {
@@ -107,16 +107,16 @@ int main(){
                         printTable(head);
                         pop(head);
                     }
-                    errno = 0;
+                    subproc_errno = 0;
                     break;
                 } case 3: { // View reservations
                     printTable(head);
                     printf("Press Enter to continue...");
                     (void)getchar();
-                    errno = 0;
+                    subproc_errno = 0;
                     break;
                 } default: {
-                    errno = 1;
+                    subproc_errno = 1;
                     break;
                 }
             }
@@ -228,7 +228,7 @@ void printMenu() {
     printf("  \033[34m[2]\033[0m Cancel table reservation\n");
     printf("  \033[34m[3]\033[0m View all reservations\n");
     printf("  \033[34m[0]\033[0m Exit\n");
-    printf(errno == 0 ? "Enter your choice: " : "\033[0;31mInvalid choice! Please try again: \033[0m");
+    printf(subproc_errno == 0 ? "Enter your choice: " : "\033[0;31mInvalid choice! Please try again: \033[0m");
 }
 
 /**
