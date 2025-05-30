@@ -66,6 +66,8 @@ void getTime(char *);
 void loadFromFile(struct Table *);
 void saveToFile(struct Table *);
 
+int errno = 0;
+
 int main(){
     char what;
     struct Table *head = NULL;
@@ -96,6 +98,7 @@ int main(){
 
                     push(table, name, phone, date, time, head);
                     printf("Reservation added successfully\n");
+                    errno = 0;
                     break;
                 } case 2: { // Cancel reservation
                     if (empty(head, curr)) {
@@ -104,13 +107,18 @@ int main(){
                         printTable(head);
                         pop(head);
                     }
+                    errno = 0;
                     break;
                 } case 3: { // View reservations
                     printTable(head);
                     printf("Press Enter to continue...");
                     (void)getchar();
+                    errno = 0;
                     break;
-                } default: break;
+                } default: {
+                    errno = 1;
+                    break;
+                }
             }
         }
     } while(what-'0');
@@ -220,7 +228,7 @@ void printMenu() {
     printf("  \033[34m[2]\033[0m Cancel table reservation\n");
     printf("  \033[34m[3]\033[0m View all reservations\n");
     printf("  \033[34m[0]\033[0m Exit\n");
-    printf("Enter your choice: ");
+    printf(errno == 0 ? "Enter your choice: " : "\033[0;31mInvalid choice! Please try again: \033[0m");
 }
 
 /**
@@ -233,9 +241,9 @@ void printMenu() {
  */
 void getTable(int *table) {
     char buffer[256];
-    
+
+    printf("Enter table number (1-50): ");
     do {
-        printf("Enter table number (1-50): ");
         if (fgets(buffer, sizeof(buffer), stdin) == NULL) {
             printf("\033[0;31mInvalid input! Please enter a number between 1 and 50:\033[0m ");
             continue;
@@ -266,8 +274,8 @@ void getName(char *name) {
 }
 
 void getPhone(char *phone) {
+    printf("Enter phone number: ");
     do {
-        printf("Enter phone number: ");
         if (fgets(phone, PHONE_LEN, stdin) == NULL || phone[0] == '\n') {
             printf("\033[0;31mInvalid input! Please enter a valid phone number: \033[0m");
             continue;
