@@ -4,8 +4,8 @@
  * saveToFile(); - Saves current reservations to a file.
  */
 
-#include "file.h"
-#include "color.h"
+#include "include/file.h"
+#include "include/color.h"
 
 void loadFromFile(struct Table *head) {
 	FILE *file = fopen("dataset.txt", "r");

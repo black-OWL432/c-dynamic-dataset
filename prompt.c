@@ -7,9 +7,9 @@
  * getTime(); - Prompts user for reservation time input.
  */
 
-#include "prompt.h"
-#include "stack.h"
-#include "color.h"
+#include "include/prompt.h"
+#include "include/stack.h"
+#include "include/color.h"
 
 void getTable(int *table, int allow_empty) {
 	char buffer[256];

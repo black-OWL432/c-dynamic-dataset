@@ -17,7 +17,6 @@ TARGET_ANDROID	:= $(O)/table_android-linux-arm64-v8a
 
 # Source files
 SRCS	:= main.c stack.c file.c prompt.c
-DEPS	:= stack.h file.h prompt.h
 
 .PHONY: all linux windows android clean mkdir_out
 
@@ -32,15 +31,15 @@ mkdir_out:
 	@mkdir -p $(O)
 
 # Linux build
-$(TARGET_LINUX): $(SRCS) $(DEPS) | mkdir_out
+$(TARGET_LINUX): $(SRCS) | mkdir_out
 	$(CC) $(CFLAGS) $(SRCS) -o $@ $(LDFLAGS)
 
 # Windows build
-$(TARGET_WINDOWS): $(SRCS) $(DEPS) | mkdir_out
+$(TARGET_WINDOWS): $(SRCS) | mkdir_out
 	$(WINCC) $(CFLAGS) $(SRCS) -o $@ $(LDFLAGS)
 
 # Android build
-$(TARGET_ANDROID): $(SRCS) $(DEPS) | mkdir_out
+$(TARGET_ANDROID): $(SRCS) | mkdir_out
 	$(NDKCC) $(CFLAGS) $(SRCS) -o $@ $(LDFLAGS)
 
 clean:

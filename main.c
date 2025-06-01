@@ -36,10 +36,10 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "file.h"
-#include "stack.h"
-#include "prompt.h"
-#include "color.h"
+#include "include/file.h"
+#include "include/stack.h"
+#include "include/prompt.h"
+#include "include/color.h"
 
 void printTable(struct Table *);
 void printMenu();

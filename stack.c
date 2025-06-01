@@ -12,9 +12,9 @@
  * query(); - Queries the stack for reservations based on user input.
  */
 
-#include "stack.h"
-#include "prompt.h"
-#include "color.h"
+#include "include/stack.h"
+#include "include/prompt.h"
+#include "include/color.h"
 
 struct Table* initTableNode(int table, char *name, char *phone, char *date, char *time) {
 	struct Table *temp = (struct Table *)malloc(sizeof(struct Table));
