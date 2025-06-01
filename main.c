@@ -35,6 +35,7 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 #include "file.h"
 #include "stack.h"
 #include "prompt.h"
@@ -43,6 +44,7 @@ void printTable(struct Table *);
 void printMenu();
 
 int subproc_errno = 0;
+char subproc_stderr[256] = "No error";
 
 int main(){
     char what;
@@ -74,7 +76,6 @@ int main(){
 
                     push(table, name, phone, date, time, head);
                     printf("Reservation added successfully\n");
-                    subproc_errno = 0;
                     break;
                 } case 2: { // Cancel reservation
                     if (empty(head, curr)) {
@@ -83,16 +84,13 @@ int main(){
                         printTable(head);
                         pop(head);
                     }
-                    subproc_errno = 0;
                     break;
                 } case 3: { // View reservations
                     printTable(head);
-                    printf("Press Enter to continue...");
-                    (void)getchar();
-                    subproc_errno = 0;
                     break;
                 } default: {
                     subproc_errno = 1;
+                    strcpy(subproc_stderr, "Invalid choice! Please try again: ");
                     break;
                 }
             }
@@ -114,9 +112,8 @@ int main(){
 void printTable(struct Table *head) {
     struct Table *temp = head->next;
     if (temp == NULL) {
-        fprintf(stderr, "\033[0;31mNo reservations exist.\033[0m\n");
-        printf("Press Enter to continue...");
-        (void)getchar();
+        subproc_errno = 1;
+        strcpy(subproc_stderr, "No reservations exist yet.");
         return;
     }
 
@@ -134,6 +131,8 @@ void printTable(struct Table *head) {
         temp = temp->next;
     }
     printf("-------------------------------------------------------------------\n");
+    printf("Press Enter to continue...");
+    (void)getchar();
 }
 
 void printMenu() {
@@ -143,5 +142,9 @@ void printMenu() {
     printf("  \033[34m[2]\033[0m Cancel table reservation\n");
     printf("  \033[34m[3]\033[0m View all reservations\n");
     printf("  \033[34m[0]\033[0m Exit\n");
-    printf(subproc_errno == 0 ? "Enter your choice: " : "\033[0;31mInvalid choice! Please try again: \033[0m");
+    if (subproc_errno != 0) {
+        fprintf(stderr, "\033[0;31m%s\033[0m\n", subproc_stderr);
+    }
+    printf("Enter your choice: ");
+    subproc_errno = 0;
 }
