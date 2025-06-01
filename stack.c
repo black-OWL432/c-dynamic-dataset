@@ -41,9 +41,10 @@ void push(int table, char *name, char *phone, char *date, char *time, struct Tab
     head->next = temp;
 }
 
-char pop(struct Table *curr) {
+char * pop(struct Table *curr) {
     struct Table *temp;
     int targetTable;
+    char *targetName = malloc(NAME_LEN);
     char targetDate[DATE_LEN], targetTime[TIME_LEN];
     
     getTable(&targetTable, 0);
@@ -59,19 +60,16 @@ char pop(struct Table *curr) {
             strcmp(temp->time, targetTime) == 0) {
 
             prev->next = temp->next;
-            printf("Reservation cancelled for \033[0;34m%s\033[0m, press Enter to continue...\n", temp->name);
+            strcpy(targetName, temp->name);
             free(temp);
-            (void)getchar();
-            return 1;
+            return targetName;
         }
         prev = temp;
         temp = temp->next;
     }
 
-    fprintf(stderr, "\n\033[0;31mNo matching reservation found!\033[0m\n");
-    printf("Press Enter to return...");
-    (void)getchar();
-    return 0;
+    free(targetName);
+    return NULL;
 }
 
 char empty(struct Table *head, struct Table *curr){

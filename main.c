@@ -44,7 +44,7 @@ void printTable(struct Table *);
 void printMenu();
 
 int subproc_errno = 0;
-char subproc_stderr[256] = "No error";
+char subproc_stderr[256], subproc_stdout[256];
 
 int main(){
     char what;
@@ -75,14 +75,22 @@ int main(){
                     getTime(time, 0);
 
                     push(table, name, phone, date, time, head);
-                    printf("Reservation added successfully\n");
+                    strcpy(subproc_stdout, "\033[0;32mReservation added successfully\033[0m\n");
                     break;
                 } case 2: { // Cancel reservation
                     if (empty(head, curr)) {
-                        printf("No reservations exist\n");
+                        subproc_errno = 1;
+                        strcpy(subproc_stderr, "No reservations exist yet.");
                     } else {
                         printTable(head);
-                        pop(head);
+                        char *ret = pop(head);
+                        if (ret == NULL) {
+                            subproc_errno = 1;
+                            strcpy(subproc_stderr, "No matching reservation found!");
+                        } else {
+                            subproc_errno = 0;
+                            sprintf(subproc_stdout, "\033[0;32mReservation cancelled successfully for \033[0;36m%s\033[0m\n", ret);
+                        }
                     }
                     break;
                 } case 3: { // View reservations
@@ -157,6 +165,9 @@ void printMenu() {
     printf("  \033[34m[0]\033[0m Exit\n");
     if (subproc_errno != 0) {
         fprintf(stderr, "\033[0;31m%s\033[0m\n", subproc_stderr);
+    } else {
+        printf("%s", subproc_stdout);
+        subproc_stdout[0] = '\0';
     }
     printf("Enter your choice: ");
     subproc_errno = 0;
