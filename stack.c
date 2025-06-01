@@ -14,6 +14,7 @@
 
 #include "stack.h"
 #include "prompt.h"
+#include "color.h"
 
 struct Table* initTableNode(int table, char *name, char *phone, char *date, char *time) {
     struct Table *temp = (struct Table *)malloc(sizeof(struct Table));
@@ -29,7 +30,7 @@ struct Table* initTableNode(int table, char *name, char *phone, char *date, char
 
 void push(int table, char *name, char *phone, char *date, char *time, struct Table *head) {
     if (isDuplicate(head, table, date, time)) {
-        fprintf(stderr, "\033[0;31mA reservation already exists!\033[0m\n");
+        fprintf(stderr, red "A reservation already exists!\n" nocol);
         printf("Press enter to return...");
         (void)getchar();
         return;
@@ -91,8 +92,8 @@ void query(struct Table *head, int table, char *name, char *phone, char *date, c
     struct Table *temp = head->next;
     int found = 0;
 
-    printf("\e[1;1H\e[2J");
-    printf("\033[0;34mSearch Results:\033[0m\n");
+    printf(clear);
+    printf(blue "Search Results: \n" nocol);
     printf("Table\tName                Phone               Date           Time\n");
     printf("-------------------------------------------------------------------\n");
 

@@ -39,6 +39,7 @@
 #include "file.h"
 #include "stack.h"
 #include "prompt.h"
+#include "color.h"
 
 void printTable(struct Table *);
 void printMenu();
@@ -75,7 +76,7 @@ int main(){
                     getTime(time, 0);
 
                     push(table, name, phone, date, time, head);
-                    strcpy(subproc_stdout, "\033[0;32mReservation added successfully\033[0m\n");
+                    strcpy(subproc_stdout, green "Reservation added successfully\n" nocol);
                     break;
                 } case 2: { // Cancel reservation
                     if (empty(head, curr)) {
@@ -89,7 +90,7 @@ int main(){
                             strcpy(subproc_stderr, "No matching reservation found!");
                         } else {
                             subproc_errno = 0;
-                            sprintf(subproc_stdout, "\033[0;32mReservation cancelled successfully for \033[0;36m%s\033[0m\n", ret);
+                            sprintf(subproc_stdout, green "Reservation cancelled successfully for " cyan "%s" nocol "\n", ret);
                         }
                     }
                     break;
@@ -137,8 +138,8 @@ void printTable(struct Table *head) {
         return;
     }
 
-    printf("\e[1;1H\e[2J");
-    printf("\033[0;34mCurrent Reservations:\033[0m\n");
+    printf(clear);
+    printf(blue "Current Reservations:" nocol "\n");
     printf("Table\tName                Phone               Date           Time\n");
     printf("-------------------------------------------------------------------\n");
     while (temp != NULL) {
@@ -156,15 +157,15 @@ void printTable(struct Table *head) {
 }
 
 void printMenu() {
-    printf("\e[1;1H\e[2J");
+    printf(clear);
     printf("Welcome to table revervatrion service, please enter your option:\n");
-    printf("  \033[34m[1]\033[0m Make table reservation\n");
-    printf("  \033[34m[2]\033[0m Cancel table reservation\n");
-    printf("  \033[34m[3]\033[0m View all reservations\n");
-    printf("  \033[34m[4]\033[0m Search reservation\n");
-    printf("  \033[34m[0]\033[0m Exit\n");
+    printf(blue "  [1] " nocol "Make table reservation\n");
+    printf(blue "  [2] " nocol "Cancel table reservation\n");
+    printf(blue "  [3] " nocol "View all reservations\n");
+    printf(blue "  [4] " nocol "Search reservation\n");
+    printf(blue "  [0] " nocol "Exit\n");
     if (subproc_errno != 0) {
-        fprintf(stderr, "\033[0;31m%s\033[0m\n", subproc_stderr);
+        fprintf(stderr, red "%s\n" nocol, subproc_stderr);
     } else {
         printf("%s", subproc_stdout);
         subproc_stdout[0] = '\0';

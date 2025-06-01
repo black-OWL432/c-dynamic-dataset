@@ -9,6 +9,7 @@
 
 #include "prompt.h"
 #include "stack.h"
+#include "color.h"
 
 void getTable(int *table, int allow_empty) {
     char buffer[256];
@@ -20,17 +21,17 @@ void getTable(int *table, int allow_empty) {
                 *table = 0;
                 return;
             }
-            fprintf(stderr, "\033[0;31mInvalid input! Please enter a number between 1 and 50:\033[0m ");
+            fprintf(stderr, red "Invalid input! Please enter a number between 1 and 50: " nocol);
             continue;
         }
 
         if (sscanf(buffer, "%d", table) != 1) {
-            fprintf(stderr, "\033[0;31mInvalid input! Please enter a number between 1 and 50:\033[0m ");
+            fprintf(stderr, red "Invalid input! Please enter a number between 1 and 50: " nocol);
             continue;
         }
 
         if (*table <= 0 || *table > 50) {
-            fprintf(stderr, "\033[0;31mInvalid input! Please enter a number between 1 and 50:\033[0m ");
+            fprintf(stderr, red "Invalid input! Please enter a number between 1 and 50: " nocol);
             continue;
         }
         break;
@@ -45,7 +46,7 @@ void getName(char *name, int allow_empty) {
                 name[0] = '\0';
                 return;
             }
-            fprintf(stderr, "\033[0;31mInvalid input! Please enter a valid name:\033[0m ");
+            fprintf(stderr, red "Invalid input! Please enter a valid name: " nocol);
             continue;
         }
         name[strcspn(name, "\n")] = 0;
@@ -60,7 +61,7 @@ void getPhone(char *phone, int allow_empty) {
                 phone[0] = '\0';
                 return;
             }
-            fprintf(stderr, "\033[0;31mInvalid input! Please enter a valid phone number: \033[0m");
+            fprintf(stderr, red "Invalid input! Please enter a valid phone number: " nocol);
             continue;
         }
         phone[strcspn(phone, "\n")] = 0;
@@ -78,20 +79,20 @@ void getDate(char *date, int allow_empty) {
                 date[0] = '\0';
                 return;
             }
-            fprintf(stderr, "\033[0;31mInvalid date format! Use DD-MM-YYYY (e.g., 28-05-2025):\033[0m ");
+            fprintf(stderr, red "Invalid date format! Use DD-MM-YYYY (e.g., 28-05-2025): " nocol);
             continue;
         }
 
         buffer[strcspn(buffer, "\n")] = 0;
 
         if (strlen(buffer) != 10 || buffer[2] != '-' || buffer[5] != '-') {
-            fprintf(stderr, "\033[0;31mInvalid date format! Use DD-MM-YYYY (e.g., 28-05-2025):\033[0m ");
+            fprintf(stderr, red "Invalid date format! Use DD-MM-YYYY (e.g., 28-05-2025): " nocol);
             continue;
         }
 
         if (sscanf(buffer, "%d-%d-%d", &day, &month, &year) != 3 || 
             month < 1 || month > 12 || day < 1 || day > 31) {
-            fprintf(stderr, "\033[0;31mInvalid date format! Use DD-MM-YYYY (e.g., 28-05-2025):\033[0m ");
+            fprintf(stderr, red "Invalid date format! Use DD-MM-YYYY (e.g., 28-05-2025): " nocol);
             continue;
         }
 
@@ -112,7 +113,7 @@ void getTime(char *time, int allow_empty) {
                 time[0] = '\0';
                 return;
             }
-            fprintf(stderr, "\033[0;31mInvalid input! Please enter a valid time (e.g., 2pm):\033[0m ");
+            fprintf(stderr, red "Invalid input! Please enter a valid time (e.g., 2pm): " nocol);
             continue;
         }
 
@@ -120,7 +121,7 @@ void getTime(char *time, int allow_empty) {
 
         if (sscanf(buffer, "%d%2s", &hour, meridiem) != 2 || hour < 1 || hour > 12 ||
             (strcmp(meridiem, "am") != 0 && strcmp(meridiem, "pm") != 0)) {
-            fprintf(stderr, "\033[0;31mInvalid input! Please enter a valid time (e.g., 2pm):\033[0m ");
+            fprintf(stderr, red "Invalid input! Please enter a valid time (e.g., 2pm): " nocol);
             continue;
         }
 

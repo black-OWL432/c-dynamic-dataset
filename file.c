@@ -5,6 +5,7 @@
  */
 
 #include "file.h"
+#include "color.h"
 
 void loadFromFile(struct Table *head) {
     FILE *file = fopen("dataset.txt", "r");
@@ -19,7 +20,7 @@ void loadFromFile(struct Table *head) {
 
         if (sscanf(line, "%d,%19[^,],%19[^,],%14[^,],%9s", 
                    &table, name, phone, date, time) != 5) {
-            fprintf(stderr, "\033[0;31mInvalid line format in file: %s\033[0m\n", line);
+            fprintf(stderr, red "Invalid line format in file: %s\n" nocol, line);
             continue;
         }
 
@@ -32,7 +33,7 @@ void loadFromFile(struct Table *head) {
 void saveToFile(struct Table *head) {
     FILE *file = fopen("dataset.txt", "w");
     if (file == NULL) {
-        fprintf(stderr, "\033[0;31mError opening file for writing!\033[0m\n");
+        fprintf(stderr, red "Error opening file for writing!\n" nocol);
         (void)getchar();
         return;
     }
