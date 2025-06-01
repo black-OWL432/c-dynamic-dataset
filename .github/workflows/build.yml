@@ -19,8 +19,8 @@ jobs:
 
       - name: Build
         run: |
-          chmod +x build.sh
-          ./build.sh pc
+          make linux
+          make windows
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
@@ -49,8 +49,8 @@ jobs:
 
       - name: Build
         run: |
-          chmod +x build.sh
-          ./build.sh android "$(pwd)/android-ndk"
+          export PATH="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH"
+          make android
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
