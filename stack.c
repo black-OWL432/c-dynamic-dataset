@@ -6,6 +6,9 @@
  * push(); - Pushes a new reservation onto the stack.
  * pop(); - Pops a reservation from the stack based on user input.
  * empty(); - Checks if the stack is empty.
+ * 
+ * Custom stack related operations
+ * isDuplicate(); - Checks if a reservation already exists in the stack.
  */
 
 #include "stack.h"
@@ -24,6 +27,13 @@ struct Table* initTableNode(int table, char *name, char *phone, char *date, char
 }
 
 void push(int table, char *name, char *phone, char *date, char *time, struct Table *head) {
+    if (isDuplicate(head, table, date, time)) {
+        fprintf(stderr, "\033[0;31mA reservation already exists!\033[0m\n");
+        printf("Press enter to return...");
+        (void)getchar();
+        return;
+    }
+
     struct Table *temp;
     temp = initTableNode(table, name, phone, date, time);
     temp->next = head->next;
@@ -65,4 +75,15 @@ char pop(struct Table *curr) {
 
 char empty(struct Table *head, struct Table *curr){
     return head->next == curr;
+}
+
+int isDuplicate(struct Table *head, int table, char *date, char *time) {
+    struct Table *temp = head->next;
+    while (temp != NULL) {
+        if (temp->table == table && strcmp(temp->date, date) == 0 && strcmp(temp->time, time) == 0) {
+            return 1;
+        }
+        temp = temp->next;
+    }
+    return 0;
 }
