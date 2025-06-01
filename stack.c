@@ -57,7 +57,9 @@ char pop(struct Table *curr) {
         temp = temp->next;
     }
 
-    fprintf(stderr, "\033[0;31mNo matching reservation found!\033[0m\n");
+    fprintf(stderr, "\n\033[0;31mNo matching reservation found!\033[0m\n");
+    printf("Press Enter to return...");
+    (void)getchar();
     return 0;
 }
 
