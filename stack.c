@@ -9,6 +9,7 @@
  * 
  * Custom stack related operations
  * isDuplicate(); - Checks if a reservation already exists in the stack.
+ * query(); - Queries the stack for reservations based on user input.
  */
 
 #include "stack.h"
@@ -45,9 +46,9 @@ char pop(struct Table *curr) {
     int targetTable;
     char targetDate[DATE_LEN], targetTime[TIME_LEN];
     
-    getTable(&targetTable);
-    getDate(targetDate);
-    getTime(targetTime);
+    getTable(&targetTable, 0);
+    getDate(targetDate, 0);
+    getTime(targetTime, 0);
 
     struct Table *prev = curr;
     temp = curr->next;
@@ -86,4 +87,39 @@ int isDuplicate(struct Table *head, int table, char *date, char *time) {
         temp = temp->next;
     }
     return 0;
+}
+
+void query(struct Table *head, int table, char *name, char *phone, char *date, char *time) {
+    struct Table *temp = head->next;
+    int found = 0;
+
+    printf("\e[1;1H\e[2J");
+    printf("\033[0;34mSearch Results:\033[0m\n");
+    printf("Table\tName                Phone               Date           Time\n");
+    printf("-------------------------------------------------------------------\n");
+
+    while (temp != NULL) {
+        if ((table == 0 || temp->table == table) &&
+            (strlen(name) == 0 || strstr(temp->name, name) != NULL) &&
+            (strlen(phone) == 0 || strstr(temp->phone, phone) != NULL) &&
+            (strlen(date) == 0 || strstr(temp->date, date) != NULL) &&
+            (strlen(time) == 0 || strstr(temp->time, time) != NULL)) {
+            printf("%d\t%-20s%-20s%-15s%-5s\n", 
+                   temp->table, 
+                   temp->name, 
+                   temp->phone, 
+                   temp->date, 
+                   temp->time);
+            found = 1;
+        }
+        temp = temp->next;
+    }
+
+    if (!found) {
+        printf("No matching reservations found.\n");
+    }
+
+    printf("-------------------------------------------------------------------\n");
+    printf("Press Enter to return...");
+    (void)getchar();
 }

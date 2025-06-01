@@ -10,12 +10,16 @@
 #include "prompt.h"
 #include "stack.h"
 
-void getTable(int *table) {
+void getTable(int *table, int allow_empty) {
     char buffer[256];
 
     printf("Enter table number (1-50): ");
     do {
-        if (fgets(buffer, sizeof(buffer), stdin) == NULL) {
+        if (fgets(buffer, sizeof(buffer), stdin) == NULL || buffer[0] == '\n') {
+            if (allow_empty && buffer[0] == '\n') {
+                *table = 0;
+                return;
+            }
             fprintf(stderr, "\033[0;31mInvalid input! Please enter a number between 1 and 50:\033[0m ");
             continue;
         }
@@ -33,10 +37,14 @@ void getTable(int *table) {
     } while (1);
 }
 
-void getName(char *name) {
+void getName(char *name, int allow_empty) {
     printf("Enter customer name: ");
     do {
         if (fgets(name, NAME_LEN, stdin) == NULL || name[0] == '\n') {
+            if (allow_empty && name[0] == '\n') {
+                name[0] = '\0';
+                return;
+            }
             fprintf(stderr, "\033[0;31mInvalid input! Please enter a valid name:\033[0m ");
             continue;
         }
@@ -44,10 +52,14 @@ void getName(char *name) {
     } while (strlen(name) == 0);
 }
 
-void getPhone(char *phone) {
+void getPhone(char *phone, int allow_empty) {
     printf("Enter phone number: ");
     do {
         if (fgets(phone, PHONE_LEN, stdin) == NULL || phone[0] == '\n') {
+            if (allow_empty && phone[0] == '\n') {
+                phone[0] = '\0';
+                return;
+            }
             fprintf(stderr, "\033[0;31mInvalid input! Please enter a valid phone number: \033[0m");
             continue;
         }
@@ -55,13 +67,17 @@ void getPhone(char *phone) {
     } while (strlen(phone) == 0);
 }
 
-void getDate(char *date) {
+void getDate(char *date, int allow_empty) {
     int day, month, year;
     char buffer[256];
 
     printf("Enter reservation date (DD-MM-YYYY): ");
     do {
-        if (fgets(buffer, sizeof(buffer), stdin) == NULL) {
+        if (fgets(buffer, sizeof(buffer), stdin) == NULL || buffer[0] == '\n') {
+            if (allow_empty && buffer[0] == '\n') {
+                date[0] = '\0';
+                return;
+            }
             fprintf(stderr, "\033[0;31mInvalid date format! Use DD-MM-YYYY (e.g., 28-05-2025):\033[0m ");
             continue;
         }
@@ -84,14 +100,18 @@ void getDate(char *date) {
     } while (1);
 }
 
-void getTime(char *time) {
+void getTime(char *time, int allow_empty) {
     int hour;
     char meridiem[3];
     char buffer[256];
 
     printf("Enter reservation time (12HR format, e.g., 2pm): ");
     do {
-        if (fgets(buffer, sizeof(buffer), stdin) == NULL) {
+        if (fgets(buffer, sizeof(buffer), stdin) == NULL || buffer[0] == '\n') {
+            if (allow_empty && buffer[0] == '\n') {
+                time[0] = '\0';
+                return;
+            }
             fprintf(stderr, "\033[0;31mInvalid input! Please enter a valid time (e.g., 2pm):\033[0m ");
             continue;
         }

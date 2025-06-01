@@ -68,11 +68,11 @@ int main(){
 
                     printf("Please fill in reservation details:\n");
 
-                    getTable(&table);
-                    getName(name);
-                    getPhone(phone);
-                    getDate(date);
-                    getTime(time);
+                    getTable(&table, 0);
+                    getName(name, 0);
+                    getPhone(phone, 0);
+                    getDate(date, 0);
+                    getTime(time, 0);
 
                     push(table, name, phone, date, time, head);
                     printf("Reservation added successfully\n");
@@ -87,6 +87,18 @@ int main(){
                     break;
                 } case 3: { // View reservations
                     printTable(head);
+                    break;
+                } case 4: { // Search reservation
+                    int table;
+                    char name[NAME_LEN], phone[PHONE_LEN], date[DATE_LEN], time[TIME_LEN];
+
+                    getTable(&table, 1);
+                    getName(name, 1);
+                    getPhone(phone, 1);
+                    getDate(date, 1);
+                    getTime(time, 1);
+
+                    query(head, table, name, phone, date, time);
                     break;
                 } default: {
                     subproc_errno = 1;
@@ -141,6 +153,7 @@ void printMenu() {
     printf("  \033[34m[1]\033[0m Make table reservation\n");
     printf("  \033[34m[2]\033[0m Cancel table reservation\n");
     printf("  \033[34m[3]\033[0m View all reservations\n");
+    printf("  \033[34m[4]\033[0m Search reservation\n");
     printf("  \033[34m[0]\033[0m Exit\n");
     if (subproc_errno != 0) {
         fprintf(stderr, "\033[0;31m%s\033[0m\n", subproc_stderr);

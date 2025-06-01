@@ -23,5 +23,6 @@ void push(int table, char *name, char *phone, char *date, char *time, struct Tab
 char pop(struct Table *curr);
 char empty(struct Table *head, struct Table *curr);
 int isDuplicate(struct Table *, int, char *, char *);
+void query(struct Table *, int , char *, char *, char *, char *);
 
 #endif

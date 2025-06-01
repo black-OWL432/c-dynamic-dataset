@@ -4,10 +4,10 @@
 #include <stdio.h>
 #include <string.h>
 
-void getTable(int *);
-void getName(char *);
-void getPhone(char *);
-void getDate(char *);
-void getTime(char *);
+void getTable(int *, int);
+void getName(char *, int);
+void getPhone(char *, int);
+void getDate(char *, int);
+void getTime(char *, int);
 
 #endif
