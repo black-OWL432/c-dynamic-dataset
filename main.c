@@ -114,7 +114,7 @@ int main(){
 void printTable(struct Table *head) {
     struct Table *temp = head->next;
     if (temp == NULL) {
-        printf("\033[0;31mNo reservations exist.\033[0m\n");
+        fprintf(stderr, "\033[0;31mNo reservations exist.\033[0m\n");
         printf("Press Enter to continue...");
         (void)getchar();
         return;
