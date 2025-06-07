@@ -19,17 +19,17 @@
  * 
  * Students 3
  * Name: Maya Alysha Binti Mohd Imran
- * Id: 
+ * Id: 242UA244CD
  * Major: CE
  * 
  * Students 4
  * Name: Muhammad Nabil Hafiz Bin Salmardi
- * Id: 
- * Major: CE
+ * Id: 242UA2411J
+ * Major: LE
  * 
  * Students 5
  * Name: Nur Adlina Humaira Binti Akmal
- * Id: 
+ * Id: 242UA244CU
  * Major: CE
  * 
  */
