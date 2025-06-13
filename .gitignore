@@ -1,6 +1,5 @@
 .vscode
 out
 *.txt
-main
-main.exe
-main.o
+*.exe
+*.o
