@@ -16,7 +16,7 @@ TARGET_WINDOWS	:= $(O)/table_windows-x86_64.exe
 TARGET_ANDROID	:= $(O)/table_android-linux-arm64-v8a
 
 # Source files
-SRCS	:= main.c stack.c file.c prompt.c
+SRCS	:= src/main.c src/stack.c src/file.c src/prompt.c
 
 .PHONY: all linux windows android clean mkdir_out
 
