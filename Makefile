@@ -1,5 +1,5 @@
 # Compiler paths
-CC		?= gcc
+CC	?= gcc
 WINCC	?= x86_64-w64-mingw32-gcc
 NDKCC	?= aarch64-linux-android29-clang
 
