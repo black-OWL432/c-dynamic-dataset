@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include "stack.h"
 
-void loadFromFile(struct Table *head);
-void saveToFile(struct Table *head);
+void loadFromFile(struct Table *);
+void saveToFile(struct Table *);
 
 #endif

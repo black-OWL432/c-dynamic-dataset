@@ -18,10 +18,10 @@ struct Table {
 	struct Table *next;
 };
 
-struct Table* initTableNode(int table, char *name, char *phone, char *date, char *time);
-void push(int table, char *name, char *phone, char *date, char *time, struct Table *head);
-char * pop(struct Table *curr);
-char empty(struct Table *head, struct Table *curr);
+struct Table* initTableNode(int, char *, char *, char *, char *);
+void push(int, char *, char *, char *, char *, struct Table *);
+char * pop(struct Table *);
+char empty(struct Table *, struct Table *);
 int isDuplicate(struct Table *, int, char *, char *);
 void query(struct Table *, int , char *, char *, char *, char *);
 
