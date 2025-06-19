@@ -43,7 +43,7 @@ cd c-dynamic-dataset
         <li>Get mingw on <a href="https://sourceforge.net/projects/mingw/files/Installer/">sourceforge</a>.</li>
         <li>Build for Windows x86_64:</li>
     </ul>
-    <pre><code>make windows</code></pre>
+    <pre><code>mingw32-make windows</code></pre>
     <ul>
         <li>Extra notes for WSL: install mingw-gcc in Ubuntu</li>
     </ul>

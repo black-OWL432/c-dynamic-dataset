@@ -1,7 +1,11 @@
 # Compiler paths
 CC	?= gcc
-WINCC	?= x86_64-w64-mingw32-gcc
 NDKCC	?= aarch64-linux-android29-clang
+ifeq ($(OS),Windows_NT)
+WINCC	?= gcc
+else
+WINCC	?= x86_64-w64-mingw32-gcc
+endif
 
 # Compiler flags
 CFLAGS	:= -Wall -O2 -pie -fPIE -s
@@ -27,8 +31,13 @@ windows: $(TARGET_WINDOWS)
 android: $(TARGET_ANDROID)
 
 # Ensure /out exists
+ifeq ($(OS),Windows_NT)
 mkdir_out:
-	@mkdir -p $(O)
+	@if not exist "$(O)" mkdir "$(O)"
+else
+mkdir_out:
+	@mkdir -p "$(O)"
+endif
 
 # Linux build
 $(TARGET_LINUX): $(SRCS) | mkdir_out
@@ -42,5 +51,10 @@ $(TARGET_WINDOWS): $(SRCS) | mkdir_out
 $(TARGET_ANDROID): $(SRCS) | mkdir_out
 	$(NDKCC) $(CFLAGS) $(SRCS) -o $@ $(LDFLAGS)
 
+ifeq ($(OS),Windows_NT)
 clean:
-	rm -rf $(O)/*
+	@if exist "out" ( rd /s /q "out" )
+else
+clean:
+	@rm -rf out/*
+endif
