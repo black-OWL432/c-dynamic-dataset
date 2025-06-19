@@ -8,7 +8,7 @@ WINCC	?= x86_64-w64-mingw32-gcc
 endif
 
 # Compiler flags
-CFLAGS	:= -Wall -O2 -pie -fPIE -s
+CFLAGS	:= -Wall -O2 -s
 LDFLAGS	:=
 
 # Output directory
