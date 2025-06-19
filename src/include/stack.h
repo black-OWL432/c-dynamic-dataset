@@ -19,7 +19,7 @@ struct Table {
 };
 
 struct Table* initTableNode(int, char *, char *, char *, char *);
-void push(int, char *, char *, char *, char *, struct Table *);
+int push(int, char *, char *, char *, char *, struct Table *);
 char * pop(struct Table *);
 char empty(struct Table *, struct Table *);
 int isDuplicate(struct Table *, int, char *, char *);

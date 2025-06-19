@@ -28,18 +28,17 @@ struct Table* initTableNode(int table, char *name, char *phone, char *date, char
 	return temp;
 }
 
-void push(int table, char *name, char *phone, char *date, char *time, struct Table *head) {
+int push(int table, char *name, char *phone, char *date, char *time, struct Table *head) {
 	if (isDuplicate(head, table, date, time)) {
-		fprintf(stderr, red "A reservation already exists!\n" nocol);
-		printf("Press enter to return...");
-		(void)getchar();
-		return;
+		return 1;
 	}
 
 	struct Table *temp;
 	temp = initTableNode(table, name, phone, date, time);
 	temp->next = head->next;
 	head->next = temp;
+
+	return 0;
 }
 
 char * pop(struct Table *curr) {

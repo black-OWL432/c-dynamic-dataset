@@ -75,8 +75,13 @@ int main(){
 					getDate(date, 0);
 					getTime(time, 0);
 
-					push(table, name, phone, date, time, head);
-					strcpy(subproc_stdout, green "Reservation added successfully\n" nocol);
+					if (push(table, name, phone, date, time, head) == 0) {
+						subproc_errno = 0;
+						strcpy(subproc_stdout, green "Reservation added successfully\n" nocol);
+					} else {
+						subproc_errno = 1;
+						strcpy(subproc_stderr, "A reservation already exists!");
+					}
 					break;
 				} case 2: { // Cancel reservation
 					if (empty(head, curr)) {

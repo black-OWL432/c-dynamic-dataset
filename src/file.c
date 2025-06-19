@@ -24,7 +24,7 @@ void loadFromFile(struct Table *head) {
 			continue;
 		}
 
-		push(table, name, phone, date, time, head);
+		(void)push(table, name, phone, date, time, head);
 	}
 
 	fclose(file);
